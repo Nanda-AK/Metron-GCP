@@ -1,0 +1,16 @@
+Dependent for Installing Apache Metron on Google Cloud Platfrom (GCP). 
+Below need to be installed on Deployment VM on GCP. 
+
+Metron 0.7.1
+ansible 2.9.9
+Vagrant 2.2.9
+Python 2.7.17
+Apache Maven 3.3.9
+Java version: 1.8.0_252
+Java home: /usr/lib/jvm/java-8-openjdk-amd64/jre
+Docker version 19.03.10, build 9424aeaee9
+node   v10.20.1
+npm   6.14.4
+g++ (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+Compiler is C++11 compliant
+
