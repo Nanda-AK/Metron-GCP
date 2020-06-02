@@ -1,0 +1,131 @@
+Below are detailed steps to install Apache Metron on GCP. 
+
+Componenet Required 
+GCP VM-1:- Deployment-VM (Ubuntu 18.04) 
+Pupus of this VM is to run automate the installation of Apache Metron and other dependent component on New VM where Metron will be installed automatacally. 
+After succesful installation, we can delete the Deployment-VM. 
+
+FCP VM-2: Apache-Metron VM (This will be automatacally installed by Deployment-VM. 
+This VM will be installed automatecally by Deployment-VM, Final Apache Metron will be running on this VM. 
+
+
+Prerequest:-
+Install Deployment-VM Ubuntu 18.04 
+Dependent: 
+Metron 0.7.1
+ansible 2.9.9
+Vagrant 2.2.9
+Python 2.7.17
+Apache Maven 3.3.9
+Java version: 1.8.0_252
+Java home: /usr/lib/jvm/java-8-openjdk-amd64/jre
+Docker version 19.03.10, build 9424aeaee9
+node   v10.20.1
+npm   6.14.4
+g++ (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+Compiler is C++11 compliant
+
+
+Below is the detaild step to install all dependent component on Deployment VM. 
+
+on VM - Ubuntu 18.04
+
+Step 1:- Install Git 
+Step 2:- Install rsync 
+
+Step 4:- Install Python & Python-pip
+sudo apt-get update
+sudo apt dist-upgrade
+sudo apt install python2.7 python-pi
+
+Step 5:- Install Ansible==2.6.5 
+pip2 install ansible==2.6.5
+
+Step 6:- Install Docker 
+https://www.hostinger.in/tutorials/how-to-install-docker-on-ubuntu
+
+Step 7:- Install Vagrant 
+https://linuxize.com/post/how-to-install-vagrant-on-ubuntu-18-04/
+
+Step 8:- Install Maven 3.3.9 
+sudo apt update
+sudo apt install maven
+mvn -version
+https://linuxize.com/post/how-to-install-apache-maven-on-ubuntu-18-04/
+
+Step 9:- Install GCC / GCC-C++ 
+sudo apt install gcc (Already installed on the Ubuntu 18-04
+
+Step 10:-  Node Install (Need to install Node 10.x) 
+https://linuxize.com/post/how-to-install-node-js-on-ubuntu-18.04/
+curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+sudo apt install nodejs
+node --version
+npm --version
+
+Step 11:- Install JDK8 
+https://www.digitalocean.com/community/tutorials/how-to-install-java-with-apt-on-ubuntu-18-04
+By default Java 11 is running, tried above to install JDK8, still it shows Java 11
+
+{ below need to be corrected 
+sudo apt install openjdk-8-jdk -y
+knanda@nanda-deployment-vm-metron-28-may:/usr/lib/jvm$ find ./ -name tools.jar
+./java-8-openjdk-amd64/lib/tools.jar }
+
+Step 12:- set JAVA_HOME
+
+knanda@nanda-deployment-vm-metron-27-may:~$ cat > ~/.bash_aliases <<EOF
+JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+PATH=$JAVA_HOME/bin:$PATH
+EOF
+knanda@nanda-deployment-vm-metron-27-may:~$ source ~/.bashrc
+
+Now, check if your JAVA_HOME has been updated to /usr/lib/jvm/java-1.8.0-openjdk-amd64 by executing:
+
+knanda@nanda-deployment-vm-metron-27-may:~$ echo $JAVA_HOME
+
+Step 13:- Key generation on Deployment VM
+ssh-keygen -f ~/.ssh/id_rsa -q -N ""
+cat ~/.ssh/id_rsa.pub
+Copy Pub key to 
+https://console.cloud.google.com/compute/metadata/sshKeys?project=thermal-cathode-276606
+
+Step 14:- Clone metron file from GitHub
+#git clone https://github.com/admodinc/apache-metron_0.7.1-rc2.git
+or git clone 
+#git clone https://github.com/Nanda-AK/Metron-GCP.git
+
+
+Step 15:- Edit Vagrantfile
+/home/knanda/apache-metron_0.7.1-rc2/metron-deployment/development/centos6/Vagrantfile
+vi Vagrantfile
+
+Step 15a:- 
+# Customize these global variables
+$GOOGLE_PROJECT_ID = "thermal-cathode-276606"     (Google Project ID) 
+$GOOGLE_JSON_KEY_LOCATION = "~/thermal-cathode-276606-8981bcd07875.json"       (JSON Key to be downloaded from GCP -> IAM -> Service Account -> Create Service account and download Key move it to Deployment VM on GCP) 
+$LOCAL_USER = "knanda"
+$LOCAL_SSH_KEY = "~/.ssh/id_rsa"              (Pub key of step 13) 
+
+Step 15b:- Update (Name of metron VM and VM details) 
+$NODE_NAME = "metron-node1-30may"
+$GOODLE_IMAGE = "centos-6-v20200505"
+$GOOGLE_MACHINE_TYPE = "n1-standard-8"
+$GOOGLE_ZONE = "us-central1-f"
+$GOOGLE_DISK_SIZE = 100
+$GOOGLE_DISK_TYPE = "pd-standard"  #Use "pd-standard" for Standard disks
+
+If Name change on Vagrant file, same need to be Update Metron VM name on below host file location
+/home/knanda/apache-metron_0.7.1-rc2/metron-deployment/development/centos6/ansible/inventory/host
+
+
+Step 16: 
+Optionally, verify that the requirements are met:  (Search for this platform-info.sh and run from that location) 
+$ metron-deployment/scripts/platform-info.sh
+
+Step 17: Run Vagrant 
+Run { vagrant plugin install vagrant-google vagrant-hostmanager vagrant-cachier }
+$ vagrant up --provider=google or 
+If you need debug output, use this command instead:
+$ env ANSIBLE_ARGS=' -vvvv' vagrant up --provider=google --parallel --debug
+
