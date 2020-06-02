@@ -1,0 +1,5 @@
+Accessing Apache Metron after successful installation. 
+
+Amabari server: http://34.66.254.28:8080 (admin/admin)
+Metron Alterts interface: http://34.66.254.28:4201 (user/password)
+Metron Management UI: http://34.66.254.28:4200 (user/password)
