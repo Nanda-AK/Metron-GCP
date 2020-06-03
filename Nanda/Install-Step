@@ -125,7 +125,8 @@ $ metron-deployment/scripts/platform-info.sh
 
 Step 17: Run Vagrant 
 Run { vagrant plugin install vagrant-google vagrant-hostmanager vagrant-cachier }
-$ vagrant up --provider=google or 
+$ vagrant up --provider=google
+or 
 If you need debug output, use this command instead:
 $ env ANSIBLE_ARGS=' -vvvv' vagrant up --provider=google --parallel --debug
 
